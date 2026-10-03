@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ChaPoJokeR Music Bot — HUD Dashboard</title>
+  <!-- Google Fonts: Inter & Orbitron (Same as cp-hud) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- HUD Background Overlay -->
+  <div id="hud-bg-overlay"></div>
+
+  <!-- Discord OAuth2 Login Overlay (Shown when NOT logged in) -->
+  <div id="loginOverlay" class="hud-modal-overlay">
+    <div class="hud-login-card">
+      <div class="hud-login-logo">
+        <i class="fab fa-discord"></i>
+      </div>
+      <h2>DISCORD AUTHENTICATION</h2>
+      <p>Please log in with your Discord account to access the Music Dashboard and controls.</p>
+
+      <button id="btnLoginDiscord" class="hud-btn hud-btn-discord-login">
+        <i class="fab fa-discord"></i> LOG IN WITH DISCORD
+      </button>
+    </div>
+  </div>
+
+  <!-- Main HUD Application Container -->
+  <div class="hud-main-wrapper" id="mainWrapper" style="display: none;">
+
+    <!-- Top Watermark & Header Bar (cp-hud Style) -->
+    <header class="hud-top-bar">
+      <!-- Watermark & Bot Logo -->
+      <div class="hud-brand-group">
+        <div class="hud-logo-wrapper" id="watermark">
+          <img id="botAvatar" src="https://cdn.discordapp.com/embed/avatars/0.png" alt="Bot Logo" class="server-logo">
+        </div>
+        <div class="hud-brand-info">
+          <div class="server-info-row">
+            <span class="server-name" id="botName">ChaPoJokeR MUSIC</span>
+            <div class="info-item" id="player-id-item">
+              <i class="fas fa-id-badge"></i>
+              <span id="botId">ID: 1354292017685073970</span>
+            </div>
+          </div>
+          <div class="info-row status-sub-row">
+            <div class="info-item status-item">
+              <i class="fas fa-circle status-dot"></i>
+              <span>ONLINE</span>
+            </div>
+            <div class="info-item ping-item">
+              <i class="fas fa-signal"></i>
+              <span id="botPing">0 ms</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Top Right Server Selection & Logged in User Profile (cp-hud Style) -->
+      <div class="hud-top-right">
+        <div class="info-item guild-selector-box">
+          <i class="fas fa-server"></i>
+          <select id="guildSelect">
+            <option value="">Loading Servers...</option>
+          </select>
+        </div>
+
+        <div class="info-item active-queues-box">
+          <i class="fas fa-compact-disc fa-spin"></i>
+          <span id="statQueues">0 Active Queues</span>
+        </div>
+
+        <button id="btnOpenApiModal" class="hud-btn hud-btn-api-config" title="Configure Bot Backend API URL">
+          <i class="fas fa-cog"></i> API URL
+        </button>
+
+        <a href="https://discord.com/oauth2/authorize?client_id=1354292017685073970&permissions=8&integration_type=0&scope=bot" target="_blank" class="hud-btn hud-btn-invite" title="Invite Bot to your Discord Server">
+          <i class="fas fa-plus-circle"></i> INVITE BOT
+        </a>
+
+        <!-- Logged in User Profile & Logout Button -->
+        <div class="hud-user-profile-box" id="userProfileSection">
+          <img id="userAvatar" src="https://cdn.discordapp.com/embed/avatars/0.png" alt="User Avatar" class="user-avatar">
+          <span id="userTag" class="user-tag">User</span>
+          <button id="btnLogoutDiscord" class="hud-btn hud-btn-logout" title="Log out of Discord">
+            <i class="fas fa-sign-out-alt"></i> LOGOUT
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- HUD Dashboard Content Grid -->
+    <main class="hud-content-grid">
+
+      <!-- Left Column: Player & Controls -->
+      <section class="hud-card main-player-card">
+        
+        <!-- Voice Channel Status Bar (cp-hud Minimal Info Row Style) -->
+        <div class="hud-sub-bar voice-channel-bar">
+          <div class="info-item voice-channel-info">
+            <i class="fas fa-volume-up voice-icon"></i>
+            <div>
+              <span class="hud-label">VOICE CHANNEL</span>
+              <h4 id="voiceChannelName">Not Connected</h4>
+            </div>
+          </div>
+
+          <div class="voice-connect-group">
+            <select id="voiceChannelSelect">
+              <option value="">Select Voice Channel...</option>
+            </select>
+            <button id="btnConnectVoice" class="hud-btn hud-btn-connect">
+              <i class="fas fa-plug"></i> CONNECT
+            </button>
+          </div>
+        </div>
+
+        <!-- Now Playing Hero Card -->
+        <div class="now-playing-hud">
+          <!-- Album Cover with HUD Ring & Source Badge -->
+          <div class="hud-album-art-wrapper">
+            <img id="trackArt" src="https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?q=80&w=600&auto=format&fit=crop" alt="Album Cover">
+            <div class="hud-visualizer-bars" id="visualizer">
+              <div class="bar b1"></div>
+              <div class="bar b2"></div>
+              <div class="bar b3"></div>
+              <div class="bar b4"></div>
+              <div class="bar b5"></div>
+            </div>
+            <span id="trackSourceBadge" class="hud-source-tag youtube">
+              <i class="fab fa-youtube"></i> YOUTUBE
+            </span>
+          </div>
+
+          <!-- Track Metadata & Timeline -->
+          <div class="hud-track-meta">
+            <h2 id="trackTitle">NO TRACK PLAYING</h2>
+            <p id="trackArtist" class="hud-artist-text">Select a server or paste a song URL below</p>
+
+            <!-- HUD Progress Timeline -->
+            <div class="hud-progress-container">
+              <div class="progress-bar-bg" id="progressBarContainer">
+                <div class="progress-bar-fill" id="progressBarFill" style="width: 0%;"></div>
+              </div>
+              <div class="hud-timestamps">
+                <span id="timeElapsed">00:00</span>
+                <span id="timeTotal">00:00</span>
+              </div>
+            </div>
+
+            <!-- Playback Control Buttons (cp-hud HUD Square Buttons) -->
+            <div class="hud-control-buttons">
+              <button id="btnPrevious" class="hud-ctrl-btn" title="Previous Track">
+                <i class="fas fa-step-backward"></i>
+              </button>
+              <button id="btnPlayPause" class="hud-ctrl-btn main-play-btn" title="Play / Pause">
+                <i class="fas fa-play"></i>
+              </button>
+              <button id="btnSkip" class="hud-ctrl-btn" title="Skip Track">
+                <i class="fas fa-step-forward"></i>
+              </button>
+              <button id="btnStop" class="hud-ctrl-btn stop-btn" title="Stop Playback">
+                <i class="fas fa-square"></i>
+              </button>
+            </div>
+
+            <!-- Volume & Loop Mode Controls -->
+            <div class="hud-sub-controls">
+              <div class="hud-volume-box">
+                <i id="volumeIcon" class="fas fa-volume-up"></i>
+                <input type="range" id="volumeSlider" min="0" max="100" value="50">
+                <span id="volumeValue">50%</span>
+              </div>
+
+              <div class="hud-toggles-box">
+                <button id="btnLoop" class="hud-pill-btn">
+                  <i class="fas fa-redo"></i> LOOP: <span id="loopStateText">OFF</span>
+                </button>
+                <button id="btnShuffle" class="hud-pill-btn">
+                  <i class="fas fa-random"></i> SHUFFLE
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Add Track Form Section -->
+        <div class="hud-add-music-box">
+          <div class="hud-box-header">
+            <i class="fas fa-plus-circle"></i>
+            <span>ADD MUSIC</span>
+          </div>
+
+          <div class="hud-input-row">
+            <div class="input-wrapper">
+              <i class="fas fa-search search-icon"></i>
+              <input type="text" id="musicQueryInput" placeholder="Paste YouTube, Spotify, SoundCloud URL or type song name...">
+            </div>
+            <button id="btnAddMusic" class="hud-btn hud-btn-action">
+              <i class="fas fa-paper-plane"></i> PLAY SONG
+            </button>
+          </div>
+
+          <div class="hud-quick-tags">
+            <span class="hud-tag" data-query="Lofi Chill beats"><i class="fas fa-coffee"></i> Lofi Chill</span>
+            <span class="hud-tag" data-query="Top Spotify Songs 2026"><i class="fab fa-spotify"></i> Top Hits</span>
+            <span class="hud-tag" data-query="Gaming Music Bass Boosted"><i class="fas fa-gamepad"></i> Gaming Bass</span>
+            <span class="hud-tag" data-query="Moroccan Chaabi Mix"><i class="fas fa-music"></i> Moroccan Mix</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right Column: Queue Panel -->
+      <section class="hud-card queue-card">
+        <div class="hud-card-header">
+          <div class="header-left">
+            <i class="fas fa-list-ol"></i>
+            <div>
+              <h3>CURRENT QUEUE</h3>
+              <span id="queueCount">0 Tracks Enqueued</span>
+            </div>
+          </div>
+          <button id="btnClearQueue" class="hud-btn hud-btn-danger-sm">
+            <i class="fas fa-trash-alt"></i> CLEAR ALL
+          </button>
+        </div>
+
+        <div class="hud-queue-scroll" id="queueListContainer">
+          <div class="empty-queue-state">
+            <i class="fas fa-compact-disc"></i>
+            <p>QUEUE IS CURRENTLY EMPTY</p>
+            <span>Paste a URL or search above to add songs</span>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Notification Toast Container -->
+    <div id="toastContainer" class="hud-toast-container"></div>
+  </div>
+
+  <!-- Backend API URL Config Modal -->
+  <div id="apiModal" class="hud-modal-overlay" style="display: none;">
+    <div class="hud-login-card">
+      <div class="hud-login-logo" style="background: rgba(0, 245, 255, 0.15); border-color: rgba(0, 245, 255, 0.4);">
+        <i class="fas fa-network-wired" style="color: var(--accent);"></i>
+      </div>
+      <h2>BOT BACKEND API URL</h2>
+      <p>Specify the backend URL where your Node.js bot server is running (e.g. <code>http://localhost:3000</code> or <code>https://your-bot-api.onrender.com</code>).</p>
+
+      <div style="margin-bottom: 20px; text-align: left;">
+        <label style="font-size: 11px; font-family: 'Orbitron', sans-serif; color: var(--text-muted); display: block; margin-bottom: 6px;">BACKEND API URL:</label>
+        <input type="text" id="inputBackendUrl" placeholder="http://localhost:3000" style="width: 100%; padding: 12px; background: rgba(0,0,0,0.5); border: 1px solid var(--border-glass); border-radius: 8px; color: white; font-family: monospace; font-size: 13px;">
+      </div>
+
+      <div style="display: flex; gap: 10px;">
+        <button id="btnSaveBackendUrl" class="hud-btn hud-btn-action" style="flex: 1; justify-content: center;">SAVE & CONNECT</button>
+        <button id="btnCloseApiModal" class="hud-btn" style="flex: 1; justify-content: center;">CANCEL</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
